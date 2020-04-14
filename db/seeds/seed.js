@@ -12,13 +12,10 @@ exports.seed = function (knex) {
 
   return Promise.all([topicsInsertions, usersInsertions])
     .then(() => {
-      /* 
-      Your article data is currently in the incorrect format and will violate your SQL schema. 
-      You will need to write and test the provided formatDate utility function to be able insert your article data.
-      Your comment insertions will depend on information from the seeded articles, so make sure to return the data after it's been seeded.
-      */
+      const formattedArticleData = formatDates(articleData);
+      return knex("articles").insert(formattedArticleData).returning("*");
+      // Your comment insertions will depend on information from the seeded articles, so make sure to return the data after it's been seeded.
     })
-
     .then((articleRows) => {
       /* 
 
@@ -34,3 +31,10 @@ exports.seed = function (knex) {
       return knex("comments").insert(formattedComments);
     });
 };
+
+// body:
+// 'The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.',
+// belongs_to: 'Living in the shadow of a great man',
+// created_by: 'butter_bridge',
+// votes: 14,
+// created_at: 1479818163389,

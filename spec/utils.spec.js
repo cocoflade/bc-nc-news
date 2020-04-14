@@ -96,6 +96,23 @@ describe("formatDates", () => {
   });
 });
 
-describe("makeRefObj", () => {});
+describe.only("makeRefObj", () => {
+  it("returns an empty object when passed an empty array", () => {
+    expect(makeRefObj([])).to.eql({});
+  });
+  it("returns a reference keyed by each item's title, with the values being each item's corresponding id", () => {
+    const input = [{ article_id: 1, title: "A" }];
+    const expected = { A: 1 };
+    expect(makeRefObj(input)).to.eql(expected);
+  });
+  it("returns the same, with multiple objects within an array", () => {
+    const input = [
+      { article_id: 1, title: "A" },
+      { article_id: 2, title: "B" },
+    ];
+    const expected = { A: 1, B: 2 };
+    expect(makeRefObj(input)).to.eql(expected);
+  });
+});
 
 describe("formatComments", () => {});

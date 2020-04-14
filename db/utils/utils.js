@@ -8,6 +8,12 @@ exports.formatDates = (list) => {
   return correctDateFormat;
 };
 
-exports.makeRefObj = (list) => {};
+exports.makeRefObj = (list) => {
+  const lookupObject = {};
+  list.forEach((item) => {
+    lookupObject[item.title] = item.article_id;
+  });
+  return lookupObject;
+};
 
 exports.formatComments = (comments, articleRef) => {};
