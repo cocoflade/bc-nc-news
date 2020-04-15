@@ -1,6 +1,6 @@
 exports.formatDates = (list) => {
   const correctDateFormat = list.map((input) => {
-    let date = new Date(input.created_at);
+    const date = new Date(input.created_at);
     const { created_at, ...restOfKeys } = input;
     return { created_at: date, ...restOfKeys };
   });
@@ -16,4 +16,16 @@ exports.makeRefObj = (list) => {
   return lookupObject;
 };
 
-exports.formatComments = (comments, articleRef) => {};
+exports.formatComments = (comments, articleRef) => {
+  const formattedComments = comments.map((comment) => {
+    const editComment = { ...comment };
+    editComment.article_id = articleRef[editComment.belongs_to];
+    editComment.author = editComment.created_by;
+    delete editComment.created_by;
+    delete editComment.belongs_to;
+    editComment.created_at = new Date(editComment.created_at);
+
+    return editComment;
+  });
+  return formattedComments;
+};

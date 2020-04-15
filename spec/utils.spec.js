@@ -96,7 +96,7 @@ describe("formatDates", () => {
   });
 });
 
-describe.only("makeRefObj", () => {
+describe("makeRefObj", () => {
   it("returns an empty object when passed an empty array", () => {
     expect(makeRefObj([])).to.eql({});
   });
@@ -115,4 +115,85 @@ describe.only("makeRefObj", () => {
   });
 });
 
-describe("formatComments", () => {});
+describe("formatComments", () => {
+  it("retuns an object within an array with the created_by and belongs_to keys changed correctly", () => {
+    const ref = { John: 1 };
+    const input = [
+      {
+        body: "Storyline",
+        belongs_to: "John",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389,
+      },
+    ];
+    const expected = [
+      {
+        body: "Storyline",
+        article_id: 1,
+        author: "butter_bridge",
+        votes: 16,
+        created_at: new Date(1511354163389),
+      },
+    ];
+    expect(formatComments(input, ref)).to.eql(expected);
+  });
+  it("returns the value of article_id corresponding to the original title value provided, and returns a correctly formatted date", () => {
+    const ref = { John: 1 };
+    const input = [
+      {
+        body: "Storyline",
+        belongs_to: "John",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389,
+      },
+    ];
+    const expected = [
+      {
+        body: "Storyline",
+        article_id: 1,
+        author: "butter_bridge",
+        votes: 16,
+        created_at: new Date(1511354163389),
+      },
+    ];
+    expect(formatComments(input, ref)).to.eql(expected);
+  });
+  it("returns the value of article_id corresponding to the original title value provided, multiple times", () => {
+    const ref = { John: 1, Tom: 2 };
+    const input = [
+      {
+        body: "Storyline",
+        belongs_to: "John",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389,
+      },
+      {
+        body: "Storyline2",
+        belongs_to: "Tom",
+        created_by: "new",
+        votes: 16,
+        created_at: 1511354163389,
+      },
+    ];
+    const expected = [
+      {
+        body: "Storyline",
+        article_id: 1,
+        author: "butter_bridge",
+        votes: 16,
+        created_at: new Date(1511354163389),
+      },
+      {
+        body: "Storyline2",
+        article_id: 2,
+        author: "new",
+        votes: 16,
+        created_at: new Date(1511354163389),
+      },
+    ];
+    expect(formatComments(input, ref)).to.eql(expected);
+  });
+});
