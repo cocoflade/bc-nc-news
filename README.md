@@ -124,15 +124,15 @@ Your server _must_ have the following endpoints:
 ```http
 GET /api/topics ----- DONE
 
-GET /api/users/:username ----- NEED TO SORT 404
+GET /api/users/:username ----- DONE
 
-GET /api/articles/:article_id ----- NEED TO SORT 404
+GET /api/articles/:article_id ----- NEED COMMENT COUNT
 PATCH /api/articles/:article_id
 
 POST /api/articles/:article_id/comments
 GET /api/articles/:article_id/comments
 
-GET /api/articles ----- NEED TO ADD TOTAL COMMENT COUNT
+GET /api/articles ----- DONE
 
 PATCH /api/comments/:comment_id
 DELETE /api/comments/:comment_id

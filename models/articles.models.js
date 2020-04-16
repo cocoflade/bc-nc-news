@@ -1,26 +1,29 @@
 const connection = require("../db/connection");
 
-exports.selectArticles = ({ article_id }) => {
+exports.selectArticlesByID = ({ article_id }) => {
+  console.log(article_id);
   return connection
-    .select(
-      "article_id",
-      "title",
-      "body",
-      "votes",
-      "topic",
-      "author",
-      "created_at"
-    )
+    .select("articles.*")
     .from("articles")
-    .modify((queryBuilder) => {
-      if (article_id) queryBuilder.where({ article_id });
-    })
+    .join("comments", "comments.article_id", "articles.article_id")
+    .groupBy("articles.article_id")
+    .count("comment_id as comment_count")
+    .where({ "articles.article_id": article_id })
     .then((articles) => {
       if (articles.length === 0)
         return Promise.reject({
           status: 404,
           msg: "article_id does not exist",
         });
-      return articles;
+      return articles[0];
     });
+};
+
+exports.selectArticles = () => {
+  return connection
+    .select("articles.*")
+    .from("articles")
+    .join("comments", "comments.article_id", "articles.article_id")
+    .groupBy("articles.article_id")
+    .count("comment_id as comment_count");
 };

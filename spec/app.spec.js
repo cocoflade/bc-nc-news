@@ -48,44 +48,45 @@ describe("/api", () => {
         });
     });
   });
-  describe.only("/articles", () => {
-    it("GET: Status 200 - responds with an array of article objects containing the correct keys", () => {
+  describe("/articles", () => {
+    it("GET: Status 200 - responds with an array of article objects containing the correct keys and a comment count", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
         .then((res) => {
           expect(res.body.articles).to.be.an("array");
           expect(res.body.articles[0]).to.contain.keys(
+            "article_id",
             "title",
             "topic",
             "author",
             "body",
-            "created_at"
+            "votes",
+            "created_at",
+            "comment_count"
           );
         });
     });
-
-    // add comment count
-
     it("GET: Status 200 - responds with an article object when passed an ID", () => {
       return request(app)
-        .get("/api/articles?article_id=1")
+        .get("/api/articles/1")
         .expect(200)
         .then((res) => {
-          expect(res.body.articles).to.be.an("array");
-          expect(res.body.articles[0]).to.contain.keys(
+          expect(res.body.articles).to.be.an("object");
+          expect(res.body.articles).to.include.keys(
             "article_id",
             "title",
             "body",
             "votes",
             "topic",
             "author",
-            "created_at"
+            "created_at",
+            "comment_count"
           );
-          expect(res.body.articles).to.have.lengthOf(1);
         });
     });
-    it("GET: 404 - responds with an error when article does not exist", () => {
+
+    it.only("GET: 404 - responds with an error when article does not exist", () => {
       return request(app)
         .get("/api/articles?article_id=112345")
         .expect(404)
@@ -95,5 +96,3 @@ describe("/api", () => {
     });
   });
 });
-
-// STILL NEED TO 404 AND ERROR HANDLE FOR BOTH USER AND ARTICLE WHERE ENDPOINT IS SPECIFIED

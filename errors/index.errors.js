@@ -1,5 +1,13 @@
 // exports.handlePSQLErrors = (err, req, res, next) => {
-//   const codes = {};
+//   const codes = {
+//     "42702": { status: 400, msg: "column reference is ambiguous" },
+//   };
+//   if (err.code in codes) {
+//     const { status, msg } = codes[err.code];
+//     res.status(status).send({ msg });
+//   } else {
+//     next(err);
+//   }
 // };
 
 exports.handleCustomErrors = (err, req, res, next) => {
