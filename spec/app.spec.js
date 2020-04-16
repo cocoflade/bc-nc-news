@@ -88,7 +88,7 @@ describe("/api", () => {
 
     it.only("GET: 404 - responds with an error when article does not exist", () => {
       return request(app)
-        .get("/api/articles?article_id=112345")
+        .get("/api/articles/112345")
         .expect(404)
         .then((res) => {
           expect(res.body.msg).to.equal("article_id does not exist");
