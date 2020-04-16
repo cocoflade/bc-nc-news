@@ -5,6 +5,7 @@ const app = require("../app");
 const connection = require("../db/connection");
 
 process.env.NODE_ENV = "test";
+// chai.use(require("chai-sorted"));
 
 beforeEach(() => {
   return connection.seed.run();
@@ -38,14 +39,14 @@ describe("/api", () => {
           expect(res.body.users).to.have.lengthOf(1);
         });
     });
-    // it("GET: 404 - responds with an error when username does not exist", () => {
-    //   return request(app)
-    //     .get("/api/users?username=incorrect")
-    //     .expect(404)
-    //     .then((res) => {
-    //       expect(res.body.msg).to.equal("username does not exist");
-    //     });
-    // });
+    it("GET: 404 - responds with an error when username does not exist", () => {
+      return request(app)
+        .get("/api/users?username=incorrect")
+        .expect(404)
+        .then((res) => {
+          expect(res.body.msg).to.equal("username does not exist");
+        });
+    });
   });
   describe.only("/articles", () => {
     it("GET: Status 200 - responds with an array of article objects containing the correct keys", () => {
@@ -63,6 +64,9 @@ describe("/api", () => {
           );
         });
     });
+
+    // add comment count
+
     it("GET: Status 200 - responds with an article object when passed an ID", () => {
       return request(app)
         .get("/api/articles?article_id=1")
@@ -79,6 +83,14 @@ describe("/api", () => {
             "created_at"
           );
           expect(res.body.articles).to.have.lengthOf(1);
+        });
+    });
+    it("GET: 404 - responds with an error when article does not exist", () => {
+      return request(app)
+        .get("/api/articles?article_id=112345")
+        .expect(404)
+        .then((res) => {
+          expect(res.body.msg).to.equal("article_id does not exist");
         });
     });
   });

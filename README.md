@@ -132,7 +132,7 @@ PATCH /api/articles/:article_id
 POST /api/articles/:article_id/comments
 GET /api/articles/:article_id/comments
 
-GET /api/articles ----- DONE
+GET /api/articles ----- NEED TO ADD TOTAL COMMENT COUNT
 
 PATCH /api/comments/:comment_id
 DELETE /api/comments/:comment_id
