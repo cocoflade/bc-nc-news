@@ -41,5 +41,3 @@ exports.editArticles = (article_id, inc_votes) => {
       return article[0];
     });
 };
-
-//{ inc_votes : 1 }

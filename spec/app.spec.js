@@ -67,7 +67,7 @@ describe("/api", () => {
           );
         });
     });
-    describe("/articles/:article_id", () => {
+    describe("/:article_id", () => {
       it("GET: Status 200 - responds with an article object when passed an ID", () => {
         return request(app)
           .get("/api/articles/1")
@@ -95,7 +95,7 @@ describe("/api", () => {
           });
       });
     });
-    it("PATCH: 200 - responds with an article object with updated votes ", () => {
+    it("PATCH: 200 - responds with an article object with incremented votes ", () => {
       return request(app)
         .patch("/api/articles/1")
         .send({ inc_votes: 1 })
@@ -105,15 +105,48 @@ describe("/api", () => {
           expect(body.article.votes).to.equal(101);
         });
     });
-    it.only("PATCH: 404 - responds 404 not found for an incorrect ID", () => {
+    it("PATCH: 200 - responds with an article object with decremented votes ", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: -1 })
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.article).to.be.an("object");
+          expect(body.article.votes).to.equal(99);
+        });
+    });
+    it("PATCH: 404 - responds 404 not found for an incorrect ID", () => {
       return request(app)
         .patch("/api/articles/123456789")
         .send({ inc_votes: 1 })
         .expect(404)
         .then(({ body }) => {
-          console.log(body);
           expect(body.msg).to.equal("article_id does not exist");
         });
+    });
+  });
+
+  describe.only("/comments", () => {
+    describe("/:comment_id", () => {
+      it("PATCH: 200 - responds with a comment object with incremented votes ", () => {
+        return request(app)
+          .patch("/api/comments/1")
+          .send({ inc_votes: 1 })
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comment).to.be.an("object");
+            expect(body.comment.votes).to.equal(17);
+          });
+      });
+      it("PATCH: 404 - responds 404 not found for an incorrect ID", () => {
+        return request(app)
+          .patch("/api/comments/123456789")
+          .send({ inc_votes: 1 })
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("comment_id does not exist");
+          });
+      });
     });
   });
 });

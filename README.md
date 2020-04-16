@@ -127,7 +127,7 @@ GET /api/topics ----- DONE
 GET /api/users/:username ----- DONE
 
 GET /api/articles/:article_id ----- DONE
-PATCH /api/articles/:article_id
+PATCH /api/articles/:article_id ----- DONE
 
 POST /api/articles/:article_id/comments
 GET /api/articles/:article_id/comments
