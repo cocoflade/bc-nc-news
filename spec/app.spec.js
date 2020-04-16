@@ -53,9 +53,9 @@ describe("/api", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
-        .then((res) => {
-          expect(res.body.articles).to.be.an("array");
-          expect(res.body.articles[0]).to.contain.keys(
+        .then(({ body }) => {
+          expect(body.articles).to.be.an("array");
+          expect(body.articles[0]).to.contain.keys(
             "article_id",
             "title",
             "topic",
@@ -67,31 +67,52 @@ describe("/api", () => {
           );
         });
     });
-    it("GET: Status 200 - responds with an article object when passed an ID", () => {
+    describe("/articles/:article_id", () => {
+      it("GET: Status 200 - responds with an article object when passed an ID", () => {
+        return request(app)
+          .get("/api/articles/1")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.articles).to.be.an("object");
+            expect(body.articles).to.include.keys(
+              "article_id",
+              "title",
+              "body",
+              "votes",
+              "topic",
+              "author",
+              "created_at",
+              "comment_count"
+            );
+          });
+      });
+      it("GET: 404 - responds with an error when article does not exist", () => {
+        return request(app)
+          .get("/api/articles/112345")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("article_id does not exist");
+          });
+      });
+    });
+    it("PATCH: 200 - responds with an article object with updated votes ", () => {
       return request(app)
-        .get("/api/articles/1")
+        .patch("/api/articles/1")
+        .send({ inc_votes: 1 })
         .expect(200)
-        .then((res) => {
-          expect(res.body.articles).to.be.an("object");
-          expect(res.body.articles).to.include.keys(
-            "article_id",
-            "title",
-            "body",
-            "votes",
-            "topic",
-            "author",
-            "created_at",
-            "comment_count"
-          );
+        .then(({ body }) => {
+          expect(body.article).to.be.an("object");
+          expect(body.article.votes).to.equal(101);
         });
     });
-
-    it.only("GET: 404 - responds with an error when article does not exist", () => {
+    it.only("PATCH: 404 - responds 404 not found for an incorrect ID", () => {
       return request(app)
-        .get("/api/articles/112345")
+        .patch("/api/articles/123456789")
+        .send({ inc_votes: 1 })
         .expect(404)
-        .then((res) => {
-          expect(res.body.msg).to.equal("article_id does not exist");
+        .then(({ body }) => {
+          console.log(body);
+          expect(body.msg).to.equal("article_id does not exist");
         });
     });
   });

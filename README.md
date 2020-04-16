@@ -126,7 +126,7 @@ GET /api/topics ----- DONE
 
 GET /api/users/:username ----- DONE
 
-GET /api/articles/:article_id ----- NEED COMMENT COUNT
+GET /api/articles/:article_id ----- DONE
 PATCH /api/articles/:article_id
 
 POST /api/articles/:article_id/comments
