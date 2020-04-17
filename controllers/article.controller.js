@@ -46,7 +46,6 @@ exports.postArticles = (req, res, next) => {
 
 exports.getArtComments = (req, res, next) => {
   const { article_id } = req.params;
-  console.log(req.params);
   selectArtComments(article_id)
     .then((comments) => {
       res.status(200).send({ comments });

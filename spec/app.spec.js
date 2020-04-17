@@ -23,7 +23,7 @@ describe("INVALID METHODS", () => {
   });
 });
 describe("/api", () => {
-  describe.only("ROUTE NOT FOUND", () => {
+  describe("ROUTE NOT FOUND", () => {
     it.only("Status 404 - responds with route not found", () => {
       return request(app)
         .get("/api/incorrect")
@@ -244,6 +244,14 @@ describe("/api", () => {
               "author",
               "body"
             );
+          });
+      });
+      it.only("GET: 404 - responds with an error when referenced table does not exist", () => {
+        return request(app)
+          .get("/api/articles/1/negative")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("route not found");
           });
       });
     });
