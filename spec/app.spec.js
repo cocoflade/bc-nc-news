@@ -176,62 +176,77 @@ describe("/api", () => {
             expect(body.msg).to.equal("article_id does not exist");
           });
       });
+      it("PATCH: 200 - responds with an article object with incremented votes ", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({ inc_votes: 1 })
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article).to.be.an("object");
+            expect(body.article.votes).to.equal(101);
+          });
+      });
+      it("PATCH: 200 - responds with an article object with decremented votes ", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({ inc_votes: -1 })
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article).to.be.an("object");
+            expect(body.article.votes).to.equal(99);
+          });
+      });
+      it("PATCH: 404 - responds 404 not found for an incorrect ID", () => {
+        return request(app)
+          .patch("/api/articles/123456789")
+          .send({ inc_votes: 1 })
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("article_id does not exist");
+          });
+      });
+      it("POST: 201 - responds with a newly added comment to the article_id", () => {
+        return request(app)
+          .post("/api/articles/1/comments")
+          .send({ username: "butter_bridge", body: "This is a post" })
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.comment).to.have.all.keys([
+              "comment_id",
+              "author",
+              "article_id",
+              "votes",
+              "created_at",
+              "body",
+            ]);
+          });
+      });
+      it("Status:400 when missing required columns", () => {
+        return request(app)
+          .post("/api/articles/1/comments")
+          .send({ body: "This is a post" })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("missing required columns");
+          });
+      });
+      it.only("GET: 200 - responds with an array of comments for a given article", () => {
+        return request(app)
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then(({ body }) => {
+            console.log(body);
+            expect(body.comments).to.be.an("array");
+            expect(body.comments[0]).to.include.keys(
+              "comment_id",
+              "votes",
+              "created_at",
+              "author",
+              "body"
+            );
+          });
+      });
     });
-    it("PATCH: 200 - responds with an article object with incremented votes ", () => {
-      return request(app)
-        .patch("/api/articles/1")
-        .send({ inc_votes: 1 })
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.article).to.be.an("object");
-          expect(body.article.votes).to.equal(101);
-        });
-    });
-    it("PATCH: 200 - responds with an article object with decremented votes ", () => {
-      return request(app)
-        .patch("/api/articles/1")
-        .send({ inc_votes: -1 })
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.article).to.be.an("object");
-          expect(body.article.votes).to.equal(99);
-        });
-    });
-    it("PATCH: 404 - responds 404 not found for an incorrect ID", () => {
-      return request(app)
-        .patch("/api/articles/123456789")
-        .send({ inc_votes: 1 })
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).to.equal("article_id does not exist");
-        });
-    });
-    it("POST: 201 - responds with a newly added comment to the article_id", () => {
-      return request(app)
-        .post("/api/articles/1/comments")
-        .send({ username: "butter_bridge", body: "This is a post" })
-        .expect(201)
-        .then(({ body }) => {
-          expect(body.comment).to.have.all.keys([
-            "comment_id",
-            "author",
-            "article_id",
-            "votes",
-            "created_at",
-            "body",
-          ]);
-        });
-    });
-    it.only("Status:400 when missing required columns", () => {
-      return request(app)
-        .post("/api/articles/1/comments")
-        .send({ body: "This is a post" })
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).to.equal("missing required columns");
-        });
-    });
-
     describe("/comments", () => {
       describe("/:comment_id", () => {
         it("PATCH: 200 - responds with a comment object with incremented votes ", () => {

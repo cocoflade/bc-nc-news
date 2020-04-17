@@ -3,6 +3,7 @@ const {
   selectArticles,
   editArticles,
   addArticles,
+  selectArtComments,
 } = require("../models/articles.models");
 
 exports.getArticlesByID = (req, res, next) => {
@@ -35,11 +36,20 @@ exports.updateArticles = (req, res, next) => {
 exports.postArticles = (req, res, next) => {
   const { article_id } = req.params;
   const comment = req.body;
-  console.log(article_id);
 
   addArticles(article_id, comment)
     .then((comment) => {
       res.status(201).send({ comment });
+    })
+    .catch(next);
+};
+
+exports.getArtComments = (req, res, next) => {
+  const { article_id } = req.params;
+  console.log(req.params);
+  selectArtComments(article_id)
+    .then((comments) => {
+      res.status(200).send({ comments });
     })
     .catch(next);
 };
