@@ -5,13 +5,23 @@ const app = require("../app");
 const connection = require("../db/connection");
 
 process.env.NODE_ENV = "test";
-// chai.use(require("chai-sorted"));
+chai.use(require("chai-sorted"));
 
 beforeEach(() => {
   return connection.seed.run();
 });
 after(() => connection.destroy());
 
+describe.only("INVALID METHODS", () => {
+  it("Status:405", () => {
+    return request(app)
+      .put("/api/articles")
+      .expect(405)
+      .then(({ body }) => {
+        expect(body.msg).to.equal("405 method not allowed");
+      });
+  });
+});
 describe("/api", () => {
   describe("/topics", () => {
     it("GET: Status 200 - responds with an array of topic objects containing the correct keys", () => {
@@ -36,7 +46,7 @@ describe("/api", () => {
             "avatar_url",
             "name"
           );
-          expect(res.body.users).to.have.lengthOf(1);
+          expect(body.users).to.have.lengthOf(1);
         });
     });
     it("GET: 404 - responds with an error when username does not exist", () => {
@@ -48,6 +58,7 @@ describe("/api", () => {
         });
     });
   });
+
   describe("/articles", () => {
     it("GET: Status 200 - responds with an array of article objects containing the correct keys and a comment count", () => {
       return request(app)
@@ -55,7 +66,7 @@ describe("/api", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.articles).to.be.an("array");
-          expect(body.articles[0]).to.contain.keys(
+          expect(body.articles[0]).to.include.keys(
             "article_id",
             "title",
             "topic",
@@ -67,6 +78,42 @@ describe("/api", () => {
           );
         });
     });
+    it("responds sorted by date and ordered by desc by default", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).to.be.descendingBy("created_at");
+        });
+    });
+    it("accepts a sorted_by query only and orders by default", () => {
+      return request(app)
+        .get("/api/articles?sorted=votes")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).to.be.descendingBy("votes");
+        });
+    });
+    it("accepts an ordered_by query only and sorts by default", () => {
+      return request(app)
+        .get("/api/articles?ordered=ascend")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).to.be.ascendingBy("created_at");
+        });
+    });
+    it("accepts an ordered_by and sorted_by query", () => {
+      return request(app)
+        .get("/api/articles?sorted=votes&ordered=ascend")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).to.be.ascendingBy("votes");
+        });
+    });
+
+    //accepts author
+    //accepts topic
+
     describe("/:article_id", () => {
       it("GET: Status 200 - responds with an article object when passed an ID", () => {
         return request(app)
@@ -126,7 +173,7 @@ describe("/api", () => {
     });
   });
 
-  describe.only("/comments", () => {
+  describe("/comments", () => {
     describe("/:comment_id", () => {
       it("PATCH: 200 - responds with a comment object with incremented votes ", () => {
         return request(app)
@@ -147,7 +194,7 @@ describe("/api", () => {
             expect(body.msg).to.equal("comment_id does not exist");
           });
       });
-      it.only("DELETE: 204 - deletes a given comment by comment_id", () => {
+      it("DELETE: 204 - deletes a given comment by comment_id", () => {
         return request(app)
           .delete("/api/comments/1")
           .expect(204)

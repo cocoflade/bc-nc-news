@@ -18,13 +18,14 @@ exports.selectArticlesByID = ({ article_id }) => {
     });
 };
 
-exports.selectArticles = () => {
+exports.selectArticles = ({ sorted = "created_at", ordered = "desc" }) => {
   return connection
     .select("articles.*")
     .from("articles")
     .join("comments", "comments.article_id", "articles.article_id")
     .groupBy("articles.article_id")
-    .count("comment_id as comment_count");
+    .count("comment_id as comment_count")
+    .orderBy(sorted, ordered);
 };
 
 exports.editArticles = (article_id, inc_votes) => {
