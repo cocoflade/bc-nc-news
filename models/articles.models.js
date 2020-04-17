@@ -4,7 +4,7 @@ exports.selectArticlesByID = ({ article_id }) => {
   return connection
     .select("articles.*")
     .from("articles")
-    .join("comments", "comments.article_id", "articles.article_id")
+    .leftJoin("comments", "comments.article_id", "articles.article_id")
     .groupBy("articles.article_id")
     .count("comment_id as comment_count")
     .where({ "articles.article_id": article_id })
@@ -15,6 +15,11 @@ exports.selectArticlesByID = ({ article_id }) => {
           msg: "article_id does not exist",
         });
       return articles[0];
+    })
+    .then((article) => {
+      if (article.length === 0)
+        return Promise.reject({ status: 404, msg: "article does not exist" });
+      return article;
     });
 };
 
@@ -27,7 +32,7 @@ exports.selectArticles = ({
   return connection
     .select("articles.*")
     .from("articles")
-    .join("comments", "comments.article_id", "articles.article_id")
+    .leftJoin("comments", "comments.article_id", "articles.article_id")
     .groupBy("articles.article_id")
     .count("comment_id as comment_count")
     .orderBy(sorted, ordered)
@@ -36,6 +41,11 @@ exports.selectArticles = ({
     })
     .modify((queryBuilder) => {
       if (topic) queryBuilder.where({ "articles.topic": topic });
+    })
+    .then((articles) => {
+      if (articles.length === 0)
+        return Promise.reject({ status: 404, msg: "articles do not exist" });
+      return articles;
     });
 };
 
@@ -70,5 +80,15 @@ exports.addArticles = (article_id, comment) => {
 };
 
 exports.selectArtComments = (article_id) => {
-  return connection("comments").select("*").where({ article_id });
+  return connection("comments")
+    .select("*")
+    .where({ article_id })
+    .then((comments) => {
+      if (comments.length === 0)
+        return Promise.reject({
+          status: 404,
+          msg: "article_id does not exist",
+        });
+      return comments;
+    });
 };

@@ -10,6 +10,5 @@ commentRouter
   .patch(updateComments)
   .delete(deleteComments)
   .all(handle405);
-// 204
 
 module.exports = commentRouter;

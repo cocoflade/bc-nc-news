@@ -24,7 +24,7 @@ describe("INVALID METHODS", () => {
 });
 describe("/api", () => {
   describe("ROUTE NOT FOUND", () => {
-    it.only("Status 404 - responds with route not found", () => {
+    it("Status 404 - responds with route not found", () => {
       return request(app)
         .get("/api/incorrect")
         .expect(404)
@@ -69,7 +69,7 @@ describe("/api", () => {
     });
   });
 
-  describe("/articles", () => {
+  describe.only("/articles", () => {
     it("GET: Status 200 - responds with an array of article objects containing the correct keys and a comment count", () => {
       return request(app)
         .get("/api/articles")
@@ -235,7 +235,6 @@ describe("/api", () => {
           .get("/api/articles/1/comments")
           .expect(200)
           .then(({ body }) => {
-            console.log(body);
             expect(body.comments).to.be.an("array");
             expect(body.comments[0]).to.include.keys(
               "comment_id",
@@ -246,7 +245,7 @@ describe("/api", () => {
             );
           });
       });
-      it.only("GET: 404 - responds with an error when referenced table does not exist", () => {
+      it("GET: 404 - responds with an error when referenced table does not exist", () => {
         return request(app)
           .get("/api/articles/1/negative")
           .expect(404)
@@ -277,10 +276,12 @@ describe("/api", () => {
             });
         });
         it("DELETE: 204 - deletes a given comment by comment_id", () => {
-          return request(app).delete("/api/comments/1").expect(204);
-          // .then(() => {
-          //   return request(app).get("/api/comments/1").expect(404);
-          // });
+          return request(app)
+            .delete("/api/comments/1")
+            .expect(204)
+            .then(() => {
+              return request(app).get("/api/comments/1").expect(405);
+            });
         });
       });
     });
