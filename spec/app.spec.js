@@ -94,14 +94,6 @@ describe("/api", () => {
           expect(body.articles).to.be.descendingBy("votes");
         });
     });
-    it.only("Status 400 - responds with error when column doesnt exists", () => {
-      return request(app)
-        .get("/api/articles?sorted=nothing")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).to.equal("column not found");
-        });
-    });
     it("accepts an ordered_by query only and sorts by default", () => {
       return request(app)
         .get("/api/articles?ordered=ascend")
@@ -118,8 +110,24 @@ describe("/api", () => {
           expect(body.articles).to.be.ascendingBy("votes");
         });
     });
-
-    //accepts author
+    it.only("accepts an author query", () => {
+      return request(app)
+        .get("/api/articles?author=butter_bridge")
+        .expect(200)
+        .then(({ body }) => {
+          body.articles.forEach((article) => {
+            expect(article.author).to.equal("butter_bridge");
+          });
+        });
+    });
+    it("Status 400 - responds with error when column doesnt exists", () => {
+      return request(app)
+        .get("/api/articles?sorted=nothing")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("column not found");
+        });
+    });
     //accepts topic
 
     describe("/:article_id", () => {
