@@ -132,10 +132,10 @@ PATCH /api/articles/:article_id ----- DONE
 POST /api/articles/:article_id/comments
 GET /api/articles/:article_id/comments
 
-GET /api/articles ----- DONE
+GET /api/articles ----- SORTBY/ORDERBY NEEDED
 
-PATCH /api/comments/:comment_id
-DELETE /api/comments/:comment_id
+PATCH /api/comments/:comment_id ----- DONE
+DELETE /api/comments/:comment_id ----- DONE
 
 GET /api
 ```

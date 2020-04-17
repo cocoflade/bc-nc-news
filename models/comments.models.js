@@ -14,3 +14,7 @@ exports.editComments = (comment_id, inc_votes) => {
       return comment[0];
     });
 };
+
+exports.removeComments = (comment_id) => {
+  return connection("comments").delete().where({ comment_id });
+};

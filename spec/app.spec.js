@@ -18,9 +18,9 @@ describe("/api", () => {
       return request(app)
         .get("/api/topics")
         .expect(200)
-        .then((res) => {
-          expect(res.body.topics).to.be.an("array");
-          expect(res.body.topics[0]).to.contain.keys("description", "slug");
+        .then(({ body }) => {
+          expect(body.topics).to.be.an("array");
+          expect(body.topics[0]).to.contain.keys("description", "slug");
         });
     });
   });
@@ -29,9 +29,9 @@ describe("/api", () => {
       return request(app)
         .get("/api/users?username=butter_bridge")
         .expect(200)
-        .then((res) => {
-          expect(res.body.users).to.be.an("array");
-          expect(res.body.users[0]).to.contain.keys(
+        .then(({ body }) => {
+          expect(body.users).to.be.an("array");
+          expect(body.users[0]).to.contain.keys(
             "username",
             "avatar_url",
             "name"
@@ -43,8 +43,8 @@ describe("/api", () => {
       return request(app)
         .get("/api/users?username=incorrect")
         .expect(404)
-        .then((res) => {
-          expect(res.body.msg).to.equal("username does not exist");
+        .then(({ body }) => {
+          expect(body.msg).to.equal("username does not exist");
         });
     });
   });
@@ -145,6 +145,14 @@ describe("/api", () => {
           .expect(404)
           .then(({ body }) => {
             expect(body.msg).to.equal("comment_id does not exist");
+          });
+      });
+      it.only("DELETE: 204 - deletes a given comment by comment_id", () => {
+        return request(app)
+          .delete("/api/comments/1")
+          .expect(204)
+          .then(() => {
+            return request(app).get("/api/comments/1").expect(404);
           });
       });
     });
