@@ -11,8 +11,8 @@ articleRouter
   .route("/:article_id")
   .get(getArticlesByID)
   .patch(updateArticles)
-  .post(postArticles)
   .all(handle405);
+articleRouter.post("/:article_id/comments", postArticles);
 articleRouter.route("/").get(getArticles).all(handle405);
 
 module.exports = articleRouter;

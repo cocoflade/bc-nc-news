@@ -2,6 +2,7 @@ exports.handlePSQLErrors = (err, req, res, next) => {
   const codes = {
     "22P02": { status: 400, msg: "posting value of incorrect type" },
     42703: { status: 400, msg: "column not found" },
+    23502: { status: 400, msg: "missing required columns" },
   };
   if (err.code in codes) {
     const { msg, status } = codes[err.code];

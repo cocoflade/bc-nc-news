@@ -23,6 +23,16 @@ describe("INVALID METHODS", () => {
   });
 });
 describe("/api", () => {
+  // describe("ROUTE NOT FOUND", () => {
+  //   it.only("Status 404 - responds with route not found", () => {
+  //     return request(app)
+  //       .get("/api/incorrect")
+  //       .expect(404)
+  //       .then(({ body }) => {
+  //         expect(body.msg).to.equal("route not found");
+  //       });
+  //   });
+  // });
   describe("/topics", () => {
     it("GET: Status 200 - responds with an array of topic objects containing the correct keys", () => {
       return request(app)
@@ -120,7 +130,7 @@ describe("/api", () => {
           });
         });
     });
-    it.only("accepts topic query", () => {
+    it("accepts topic query", () => {
       return request(app)
         .get("/api/articles?topic=mitch")
         .expect(200)
@@ -198,25 +208,28 @@ describe("/api", () => {
     });
     it("POST: 201 - responds with a newly added comment to the article_id", () => {
       return request(app)
-        .post("/api/articles/1")
-        .send({ username: "John", body: "This is a post" })
+        .post("/api/articles/1/comments")
+        .send({ username: "butter_bridge", body: "This is a post" })
         .expect(201)
-        .then((res) => {
-          console.log(res.body);
-          expect(res.body.articles).to.include.keys(
-            "article_id",
-            "title",
-            "body",
-            "votes",
-            "topic",
+        .then(({ body }) => {
+          expect(body.comment).to.have.all.keys([
+            "comment_id",
             "author",
+            "article_id",
+            "votes",
             "created_at",
-            "comment_count"
-          );
+            "body",
+          ]);
         });
-      it("status:400 when missing required columns", () => {});
-
-      it("status:422 when posting correctly formatted id that does not exist", () => {});
+    });
+    it.only("Status:400 when missing required columns", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({ body: "This is a post" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("missing required columns");
+        });
     });
 
     describe("/comments", () => {
