@@ -70,6 +70,5 @@ exports.addArticles = (article_id, comment) => {
 };
 
 exports.selectArtComments = (article_id) => {
-  console.log("MODEL", article_id);
   return connection("comments").select("*").where({ article_id });
 };

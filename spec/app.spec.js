@@ -23,16 +23,16 @@ describe("INVALID METHODS", () => {
   });
 });
 describe("/api", () => {
-  // describe("ROUTE NOT FOUND", () => {
-  //   it.only("Status 404 - responds with route not found", () => {
-  //     return request(app)
-  //       .get("/api/incorrect")
-  //       .expect(404)
-  //       .then(({ body }) => {
-  //         expect(body.msg).to.equal("route not found");
-  //       });
-  //   });
-  // });
+  describe.only("ROUTE NOT FOUND", () => {
+    it.only("Status 404 - responds with route not found", () => {
+      return request(app)
+        .get("/api/incorrect")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("route not found");
+        });
+    });
+  });
   describe("/topics", () => {
     it("GET: Status 200 - responds with an array of topic objects containing the correct keys", () => {
       return request(app)
@@ -230,7 +230,7 @@ describe("/api", () => {
             expect(body.msg).to.equal("missing required columns");
           });
       });
-      it.only("GET: 200 - responds with an array of comments for a given article", () => {
+      it("GET: 200 - responds with an array of comments for a given article", () => {
         return request(app)
           .get("/api/articles/1/comments")
           .expect(200)
