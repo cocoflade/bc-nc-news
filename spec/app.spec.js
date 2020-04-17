@@ -110,13 +110,23 @@ describe("/api", () => {
           expect(body.articles).to.be.ascendingBy("votes");
         });
     });
-    it.only("accepts an author query", () => {
+    it("accepts an author query", () => {
       return request(app)
         .get("/api/articles?author=butter_bridge")
         .expect(200)
         .then(({ body }) => {
           body.articles.forEach((article) => {
             expect(article.author).to.equal("butter_bridge");
+          });
+        });
+    });
+    it.only("accepts topic query", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({ body }) => {
+          body.articles.forEach((article) => {
+            expect(article.topic).to.equal("mitch");
           });
         });
     });
@@ -128,7 +138,6 @@ describe("/api", () => {
           expect(body.msg).to.equal("column not found");
         });
     });
-    //accepts topic
 
     describe("/:article_id", () => {
       it("GET: Status 200 - responds with an article object when passed an ID", () => {
@@ -189,43 +198,54 @@ describe("/api", () => {
     });
     it("POST: 201 - responds with a newly added comment to the article_id", () => {
       return request(app)
-        .post("/api/articles/1/comments")
+        .post("/api/articles/1")
         .send({ username: "John", body: "This is a post" })
         .expect(201)
         .then((res) => {
-          expect(res.body.article.comments).to.equal({});
+          console.log(res.body);
+          expect(res.body.articles).to.include.keys(
+            "article_id",
+            "title",
+            "body",
+            "votes",
+            "topic",
+            "author",
+            "created_at",
+            "comment_count"
+          );
         });
-    });
-    it("status:422 when posting correctly formatted id that does not exist", () => {});
-    it("status:400 when missing required columns", () => {});
-  });
+      it("status:400 when missing required columns", () => {});
 
-  describe("/comments", () => {
-    describe("/:comment_id", () => {
-      it("PATCH: 200 - responds with a comment object with incremented votes ", () => {
-        return request(app)
-          .patch("/api/comments/1")
-          .send({ inc_votes: 1 })
-          .expect(200)
-          .then(({ body }) => {
-            expect(body.comment).to.be.an("object");
-            expect(body.comment.votes).to.equal(17);
-          });
-      });
-      it("PATCH: 404 - responds 404 not found for an incorrect ID", () => {
-        return request(app)
-          .patch("/api/comments/123456789")
-          .send({ inc_votes: 1 })
-          .expect(404)
-          .then(({ body }) => {
-            expect(body.msg).to.equal("comment_id does not exist");
-          });
-      });
-      it("DELETE: 204 - deletes a given comment by comment_id", () => {
-        return request(app).delete("/api/comments/1").expect(204);
-        // .then(() => {
-        //   return request(app).get("/api/comments/1").expect(404);
-        // });
+      it("status:422 when posting correctly formatted id that does not exist", () => {});
+    });
+
+    describe("/comments", () => {
+      describe("/:comment_id", () => {
+        it("PATCH: 200 - responds with a comment object with incremented votes ", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: 1 })
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comment).to.be.an("object");
+              expect(body.comment.votes).to.equal(17);
+            });
+        });
+        it("PATCH: 404 - responds 404 not found for an incorrect ID", () => {
+          return request(app)
+            .patch("/api/comments/123456789")
+            .send({ inc_votes: 1 })
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("comment_id does not exist");
+            });
+        });
+        it("DELETE: 204 - deletes a given comment by comment_id", () => {
+          return request(app).delete("/api/comments/1").expect(204);
+          // .then(() => {
+          //   return request(app).get("/api/comments/1").expect(404);
+          // });
+        });
       });
     });
   });

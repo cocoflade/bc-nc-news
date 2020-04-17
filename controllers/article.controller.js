@@ -34,10 +34,13 @@ exports.updateArticles = (req, res, next) => {
 
 exports.postArticles = (req, res, next) => {
   const { article_id } = req.params;
-  const { comment } = req.body;
+  const comment = req.body;
+
   addArticles(article_id, comment)
     .then((comment) => {
+      console.log(comment);
       res.status(201).send({ comment });
     })
     .catch(next);
+  console.log(err);
 };

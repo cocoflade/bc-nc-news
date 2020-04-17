@@ -22,6 +22,7 @@ exports.selectArticles = ({
   sorted = "created_at",
   ordered = "desc",
   author,
+  topic,
 }) => {
   return connection
     .select("articles.*")
@@ -32,6 +33,9 @@ exports.selectArticles = ({
     .orderBy(sorted, ordered)
     .modify((queryBuilder) => {
       if (author) queryBuilder.where({ "articles.author": author });
+    })
+    .modify((queryBuilder) => {
+      if (topic) queryBuilder.where({ "articles.topic": topic });
     });
 };
 
@@ -50,7 +54,7 @@ exports.editArticles = (article_id, inc_votes) => {
     });
 };
 
-exports.addArticles = (article_id, newComment) => {
+exports.addArticles = ({ article_id, comment }) => {
   return connection
     .select("articles.*")
     .from("articles")
@@ -58,7 +62,7 @@ exports.addArticles = (article_id, newComment) => {
     .groupBy("articles.article_id")
     .count("comment_id as comment_count")
     .where({ "articles.article_id": article_id })
-    .insert(newComment)
+    .insert({ comment })
     .returning("*")
     .then((articles) => {
       if (articles.length === 0)
