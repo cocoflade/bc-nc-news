@@ -8,8 +8,8 @@ const {
 
 exports.getArticlesByID = (req, res, next) => {
   selectArticlesByID(req.params)
-    .then((articles) => {
-      res.status(200).send({ articles });
+    .then((article) => {
+      res.status(200).send({ article });
     })
     .catch(next);
 };
@@ -25,7 +25,6 @@ exports.getArticles = (req, res, next) => {
 exports.patchArticleVotes = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
-
   updateArticleVotes(article_id, inc_votes)
     .then((article) => {
       res.status(200).send({ article });
@@ -45,8 +44,7 @@ exports.postArticleComment = (req, res, next) => {
 };
 
 exports.getArticleComments = (req, res, next) => {
-  const { article_id } = req.params;
-  selectArticleComments(article_id)
+  selectArticleComments(req.params, req.query)
     .then((comments) => {
       res.status(200).send({ comments });
     })

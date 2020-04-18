@@ -62,17 +62,21 @@ describe("/api", () => {
     describe("/users:username", () => {
       it("GET: Status 200 - responds with a user object when passed their username", () => {
         return request(app)
-          .get("/api/users?username=butter_bridge")
+          .get("/api/users/butter_bridge")
           .expect(200)
           .then(({ body }) => {
             expect(body.user).to.be.an("object");
-            expect(body.user).to.contain.keys("username", "avatar_url", "name");
-            expect(body.user.name).to.equal("jonny");
+            expect(body.user.user).to.contain.keys(
+              "username",
+              "avatar_url",
+              "name"
+            );
+            expect(body.user.user.name).to.equal("jonny");
           });
       });
       it("GET: 404 - responds with an error when username does not exist", () => {
         return request(app)
-          .get("/api/users?username=incorrect")
+          .get("/api/users/incorrect")
           .expect(404)
           .then(({ body }) => {
             expect(body.msg).to.equal("username does not exist");
@@ -122,6 +126,7 @@ describe("/api", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.articles).to.be.ascendingBy("created_at");
+          expect(body.articles[0].author).to.equal("butter_bridge");
         });
     });
     it("accepts an ordered_by and sorted_by query", () => {
@@ -130,6 +135,15 @@ describe("/api", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.articles).to.be.ascendingBy("votes");
+        });
+    });
+    it("accepts a sorted_by author query", () => {
+      return request(app)
+        .get("/api/articles?sorted=author")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).to.be.descendingBy("author");
+          expect(body.articles[0].author).to.equal("rogersop");
         });
     });
     it("accepts an author query", () => {
@@ -142,6 +156,14 @@ describe("/api", () => {
           });
         });
     });
+    it("Status 404 - responds with an error when author doesnt exist", () => {
+      return request(app)
+        .get("/api/articles?topic=not-an-author")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("endpoint not found");
+        });
+    });
     it("accepts topic query", () => {
       return request(app)
         .get("/api/articles?topic=mitch")
@@ -152,6 +174,15 @@ describe("/api", () => {
           });
         });
     });
+    it("Status 404 - responds with an error when topic doesnt exist", () => {
+      return request(app)
+        .get("/api/articles?topic=not-a-topic")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("endpoint not found");
+        });
+    });
+
     it("Status 400 - responds with error when column doesnt exists", () => {
       return request(app)
         .get("/api/articles?sorted=nothing")
@@ -167,8 +198,8 @@ describe("/api", () => {
           .get("/api/articles/1")
           .expect(200)
           .then(({ body }) => {
-            expect(body.articles).to.be.an("object");
-            expect(body.articles).to.include.keys(
+            expect(body.article).to.be.an("object");
+            expect(body.article).to.include.keys(
               "article_id",
               "title",
               "body",
@@ -188,7 +219,16 @@ describe("/api", () => {
             expect(body.msg).to.equal("article_id does not exist");
           });
       });
-      it("PATCH: 200 - responds with an article object with incremented votes ", () => {
+      it("PATCH: 200 - responds with an article object with default incremented votes set to 0 and no votes sent", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article).to.be.an("object");
+            expect(body.article.votes).to.equal(100);
+          });
+      });
+      it("PATCH: 200 - responds with an article object with incremented votes", () => {
         return request(app)
           .patch("/api/articles/1")
           .send({ inc_votes: 1 })
@@ -242,6 +282,15 @@ describe("/api", () => {
             expect(body.msg).to.equal("missing required columns");
           });
       });
+      it("GET: 200 - responds with an array of comments for a given article, sorted by votes", () => {
+        return request(app)
+          .get("/api/articles/1/comments?sorted=votes")
+          .expect(200)
+          .then(({ body }) => {
+            // expect(body.comments).to.be.descendingBy("votes");
+            expect(body.comments[0].author).to.equal("butter_bridge");
+          });
+      });
       it("GET: 200 - responds with an array of comments for a given article", () => {
         return request(app)
           .get("/api/articles/1/comments")
@@ -257,6 +306,7 @@ describe("/api", () => {
             );
           });
       });
+
       it("GET: 404 - responds with an error when referenced table does not exist", () => {
         return request(app)
           .get("/api/articles/1/negative")
@@ -270,6 +320,15 @@ describe("/api", () => {
 
   describe("/comments", () => {
     describe("/:comment_id", () => {
+      it("PATCH: 200 - responds with a comment object with no incremented votes, default set to 0 ", () => {
+        return request(app)
+          .patch("/api/comments/1")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comment).to.be.an("object");
+            expect(body.comment.votes).to.equal(16);
+          });
+      });
       it("PATCH: 200 - responds with a comment object with incremented votes ", () => {
         return request(app)
           .patch("/api/comments/1")
