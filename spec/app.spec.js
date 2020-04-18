@@ -44,10 +44,11 @@ describe("/api", () => {
         });
     });
   });
+
   describe("/users", () => {
-    it("GET: Status 200 - responds with a user object when passed their username", () => {
+    it("GET: Status 200 - responds with an array of user objects", () => {
       return request(app)
-        .get("/api/users?username=butter_bridge")
+        .get("/api/users")
         .expect(200)
         .then(({ body }) => {
           expect(body.users).to.be.an("array");
@@ -56,27 +57,38 @@ describe("/api", () => {
             "avatar_url",
             "name"
           );
-          expect(body.users).to.have.lengthOf(1);
         });
     });
-    it("GET: 404 - responds with an error when username does not exist", () => {
-      return request(app)
-        .get("/api/users?username=incorrect")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).to.equal("username does not exist");
-        });
+    describe("/users:username", () => {
+      it("GET: Status 200 - responds with a user object when passed their username", () => {
+        return request(app)
+          .get("/api/users?username=butter_bridge")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.user).to.be.an("object");
+            expect(body.user).to.contain.keys("username", "avatar_url", "name");
+            expect(body.user.name).to.equal("jonny");
+          });
+      });
+      it("GET: 404 - responds with an error when username does not exist", () => {
+        return request(app)
+          .get("/api/users?username=incorrect")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("username does not exist");
+          });
+      });
     });
   });
 
-  describe.only("/articles", () => {
-    it("GET: Status 200 - responds with an array of article objects containing the correct keys and a comment count", () => {
+  describe("/articles", () => {
+    it("GET: Status 200 - responds with an array of article objects with a total comment count", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
           expect(body.articles).to.be.an("array");
-          expect(body.articles[0]).to.include.keys(
+          expect(body.articles[0]).to.contain.keys(
             "article_id",
             "title",
             "topic",
@@ -254,35 +266,36 @@ describe("/api", () => {
           });
       });
     });
-    describe("/comments", () => {
-      describe("/:comment_id", () => {
-        it("PATCH: 200 - responds with a comment object with incremented votes ", () => {
-          return request(app)
-            .patch("/api/comments/1")
-            .send({ inc_votes: 1 })
-            .expect(200)
-            .then(({ body }) => {
-              expect(body.comment).to.be.an("object");
-              expect(body.comment.votes).to.equal(17);
-            });
-        });
-        it("PATCH: 404 - responds 404 not found for an incorrect ID", () => {
-          return request(app)
-            .patch("/api/comments/123456789")
-            .send({ inc_votes: 1 })
-            .expect(404)
-            .then(({ body }) => {
-              expect(body.msg).to.equal("comment_id does not exist");
-            });
-        });
-        it("DELETE: 204 - deletes a given comment by comment_id", () => {
-          return request(app)
-            .delete("/api/comments/1")
-            .expect(204)
-            .then(() => {
-              return request(app).get("/api/comments/1").expect(405);
-            });
-        });
+  });
+
+  describe("/comments", () => {
+    describe("/:comment_id", () => {
+      it("PATCH: 200 - responds with a comment object with incremented votes ", () => {
+        return request(app)
+          .patch("/api/comments/1")
+          .send({ inc_votes: 1 })
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comment).to.be.an("object");
+            expect(body.comment.votes).to.equal(17);
+          });
+      });
+      it("PATCH: 404 - responds 404 not found for an incorrect ID", () => {
+        return request(app)
+          .patch("/api/comments/123456789")
+          .send({ inc_votes: 1 })
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("comment_id does not exist");
+          });
+      });
+      it("DELETE: 204 - deletes a given comment by comment_id", () => {
+        return request(app)
+          .delete("/api/comments/1")
+          .expect(204)
+          .then(() => {
+            return request(app).get("/api/comments/1").expect(405);
+          });
       });
     });
   });

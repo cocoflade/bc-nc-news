@@ -15,11 +15,6 @@ exports.selectArticlesByID = ({ article_id }) => {
           msg: "article_id does not exist",
         });
       return articles[0];
-    })
-    .then((article) => {
-      if (article.length === 0)
-        return Promise.reject({ status: 404, msg: "article does not exist" });
-      return article;
     });
 };
 

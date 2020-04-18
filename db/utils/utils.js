@@ -8,7 +8,7 @@ exports.formatDates = (list) => {
   return correctDateFormat;
 };
 
-exports.makeRefObj = (list) => {
+exports.makeRefObject = (list) => {
   const lookupObject = {};
   list.forEach((item) => {
     lookupObject[item.title] = item.article_id;
