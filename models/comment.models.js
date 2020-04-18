@@ -1,6 +1,6 @@
 const connection = require("../db/connection");
 
-exports.editComments = (comment_id, inc_votes) => {
+exports.updateCommentVotes = (comment_id, inc_votes) => {
   return connection("comments")
     .increment("votes", inc_votes)
     .where({ comment_id })

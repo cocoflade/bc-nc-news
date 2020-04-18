@@ -38,8 +38,6 @@ exports.selectArticles = ({
     .orderBy(sorted, ordered)
     .modify((queryBuilder) => {
       if (author) queryBuilder.where({ "articles.author": author });
-    })
-    .modify((queryBuilder) => {
       if (topic) queryBuilder.where({ "articles.topic": topic });
     })
     .then((articles) => {
@@ -49,7 +47,7 @@ exports.selectArticles = ({
     });
 };
 
-exports.editArticles = (article_id, inc_votes) => {
+exports.updateArticleVotes = (article_id, inc_votes) => {
   return connection("articles")
     .increment("votes", inc_votes)
     .where({ article_id })
@@ -64,7 +62,7 @@ exports.editArticles = (article_id, inc_votes) => {
     });
 };
 
-exports.addArticles = (article_id, comment) => {
+exports.addArticleComment = (article_id, comment) => {
   const commentToAdd = {
     article_id: article_id,
     author: comment.username,
@@ -79,7 +77,7 @@ exports.addArticles = (article_id, comment) => {
     });
 };
 
-exports.selectArtComments = (article_id) => {
+exports.selectArticleComments = (article_id) => {
   return connection("comments")
     .select("*")
     .where({ article_id })
