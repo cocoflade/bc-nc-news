@@ -25,6 +25,7 @@ exports.getArticles = (req, res, next) => {
 exports.patchArticleVotes = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
+
   updateArticleVotes(article_id, inc_votes)
     .then((article) => {
       res.status(200).send({ article });
@@ -44,7 +45,10 @@ exports.postArticleComment = (req, res, next) => {
 };
 
 exports.getArticleComments = (req, res, next) => {
-  selectArticleComments(req.params, req.query)
+  const article_id = req.params;
+  const sorted = req.query;
+
+  selectArticleComments(article_id, sorted)
     .then((comments) => {
       res.status(200).send({ comments });
     })

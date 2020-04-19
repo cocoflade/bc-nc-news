@@ -86,7 +86,7 @@ describe("/api", () => {
   });
 
   describe("/articles", () => {
-    it("GET: Status 200 - responds with an array of article objects with a total comment count", () => {
+    it("GET: 200 - responds with an array of article objects with a total comment count", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
@@ -104,7 +104,7 @@ describe("/api", () => {
           );
         });
     });
-    it("responds sorted by date and ordered by desc by default", () => {
+    it("GET: 200 - responds sorted by date and ordered by desc by default", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
@@ -112,7 +112,7 @@ describe("/api", () => {
           expect(body.articles).to.be.descendingBy("created_at");
         });
     });
-    it("accepts a sorted_by query only and orders by default", () => {
+    it("GET: 200 - accepts a sorted_by query only and orders by default", () => {
       return request(app)
         .get("/api/articles?sorted=votes")
         .expect(200)
@@ -120,7 +120,7 @@ describe("/api", () => {
           expect(body.articles).to.be.descendingBy("votes");
         });
     });
-    it("accepts an ordered_by query only and sorts by default", () => {
+    it("GET: 200 - accepts an ordered_by query only and sorts by default", () => {
       return request(app)
         .get("/api/articles?ordered=ascend")
         .expect(200)
@@ -129,7 +129,7 @@ describe("/api", () => {
           expect(body.articles[0].author).to.equal("butter_bridge");
         });
     });
-    it("accepts an ordered_by and sorted_by query", () => {
+    it("GET: 200 - accepts an ordered_by and sorted_by query", () => {
       return request(app)
         .get("/api/articles?sorted=votes&ordered=ascend")
         .expect(200)
@@ -137,7 +137,7 @@ describe("/api", () => {
           expect(body.articles).to.be.ascendingBy("votes");
         });
     });
-    it("accepts a sorted_by author query", () => {
+    it("GET: 200 - accepts a sorted_by author query", () => {
       return request(app)
         .get("/api/articles?sorted=author")
         .expect(200)
@@ -146,7 +146,7 @@ describe("/api", () => {
           expect(body.articles[0].author).to.equal("rogersop");
         });
     });
-    it("accepts an author query", () => {
+    it("GET: 200 - accepts an author query", () => {
       return request(app)
         .get("/api/articles?author=butter_bridge")
         .expect(200)
@@ -156,7 +156,7 @@ describe("/api", () => {
           });
         });
     });
-    it("Status 404 - responds with an error when author doesnt exist", () => {
+    it("Status: 404 - responds with an error when author doesnt exist", () => {
       return request(app)
         .get("/api/articles?topic=not-an-author")
         .expect(404)
@@ -164,7 +164,7 @@ describe("/api", () => {
           expect(body.msg).to.equal("endpoint not found");
         });
     });
-    it("accepts topic query", () => {
+    it("GET: 200 - accepts topic query", () => {
       return request(app)
         .get("/api/articles?topic=mitch")
         .expect(200)
@@ -174,7 +174,7 @@ describe("/api", () => {
           });
         });
     });
-    it("Status 404 - responds with an error when topic doesnt exist", () => {
+    it("Status: 404 - responds with an error when topic doesnt exist", () => {
       return request(app)
         .get("/api/articles?topic=not-a-topic")
         .expect(404)
@@ -183,7 +183,7 @@ describe("/api", () => {
         });
     });
 
-    it("Status 400 - responds with error when column doesnt exists", () => {
+    it("Status: 400 - responds with error when column doesnt exists", () => {
       return request(app)
         .get("/api/articles?sorted=nothing")
         .expect(400)
@@ -193,7 +193,7 @@ describe("/api", () => {
     });
 
     describe("/:article_id", () => {
-      it("GET: Status 200 - responds with an article object when passed an ID", () => {
+      it("GET: 200 - responds with an article object when passed an ID", () => {
         return request(app)
           .get("/api/articles/1")
           .expect(200)
@@ -248,7 +248,7 @@ describe("/api", () => {
             expect(body.article.votes).to.equal(99);
           });
       });
-      it("PATCH: 404 - responds 404 not found for an incorrect ID", () => {
+      it("Status: 404 - responds 404 not found when attempting to patch with an incorrect ID", () => {
         return request(app)
           .patch("/api/articles/123456789")
           .send({ inc_votes: 1 })
@@ -273,7 +273,7 @@ describe("/api", () => {
             ]);
           });
       });
-      it("Status:400 when missing required columns", () => {
+      it("Status: 400 - when missing required columns", () => {
         return request(app)
           .post("/api/articles/1/comments")
           .send({ body: "This is a post" })
@@ -282,13 +282,13 @@ describe("/api", () => {
             expect(body.msg).to.equal("missing required columns");
           });
       });
-      it("GET: 200 - responds with an array of comments for a given article, sorted by votes", () => {
+      it("Status: 422 - when attempting to post to an article_id that does not exist", () => {
         return request(app)
-          .get("/api/articles/1/comments?sorted=votes")
-          .expect(200)
+          .post("/api/articles/100000/comments")
+          .send({ username: "butter_bridge", body: "This is a post" })
+          .expect(422)
           .then(({ body }) => {
-            // expect(body.comments).to.be.descendingBy("votes");
-            expect(body.comments[0].author).to.equal("butter_bridge");
+            expect(body.msg).to.equal("unprocessable entity");
           });
       });
       it("GET: 200 - responds with an array of comments for a given article", () => {
@@ -304,10 +304,36 @@ describe("/api", () => {
               "author",
               "body"
             );
+            expect(body.comments).to.be.descendingBy("created_at");
           });
       });
-
-      it("GET: 404 - responds with an error when referenced table does not exist", () => {
+      it("GET: 200 - responds with an array of comments for a given article, sorted by votes", () => {
+        return request(app)
+          .get("/api/articles/1/comments?sorted=votes")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comments).to.be.descendingBy("votes");
+            expect(body.comments[0].comment_id).to.equal(3);
+          });
+      });
+      it("GET: 200 - responds with an array of comments for a given article, taking an ordered query of ascending", () => {
+        return request(app)
+          .get("/api/articles/1/comments?ordered=asc")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comments).to.be.ascendingBy("created_at");
+            expect(body.comments[0].comment_id).to.equal(18);
+          });
+      });
+      it("Status: 400 - responds with error when column to sort by doesnt exist", () => {
+        return request(app)
+          .get("/api/articles/1/comments?sorted=nothing")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("column not found");
+          });
+      });
+      it("Status: 404 - responds with an error when referenced table does not exist", () => {
         return request(app)
           .get("/api/articles/1/negative")
           .expect(404)
@@ -315,9 +341,16 @@ describe("/api", () => {
             expect(body.msg).to.equal("route not found");
           });
       });
+      it("Status: 404 - responds with an error when a valid article_id does not exist", () => {
+        return request(app)
+          .get("/api/articles/100000/comments")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("article_id does not exist");
+          });
+      });
     });
   });
-
   describe("/comments", () => {
     describe("/:comment_id", () => {
       it("PATCH: 200 - responds with a comment object with no incremented votes, default set to 0 ", () => {
@@ -339,7 +372,7 @@ describe("/api", () => {
             expect(body.comment.votes).to.equal(17);
           });
       });
-      it("PATCH: 404 - responds 404 not found for an incorrect ID", () => {
+      it("Status: 404 - responds 404 not found for an incorrect ID when attempting patch", () => {
         return request(app)
           .patch("/api/comments/123456789")
           .send({ inc_votes: 1 })

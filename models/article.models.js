@@ -72,11 +72,10 @@ exports.addArticleComment = (article_id, comment) => {
     });
 };
 
-exports.selectArticleComments = ({
-  article_id,
-  sorted = "created_at",
-  ordered = "desc",
-}) => {
+exports.selectArticleComments = (
+  { article_id },
+  { sorted = "created_at", ordered = "desc" }
+) => {
   return connection("comments")
     .select("*")
     .where({ article_id })
