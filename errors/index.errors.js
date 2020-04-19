@@ -1,9 +1,9 @@
 exports.handlePSQLErrors = (err, req, res, next) => {
   const codes = {
-    "22P02": { status: 400, msg: "Posting value of incorrect type" },
-    42703: { status: 400, msg: "Column not found" },
-    23502: { status: 400, msg: "Missing required columns" },
-    23503: { status: 422, msg: "Unprocessable entity" },
+    "22P02": { status: 400, msg: "posting value of incorrect type" },
+    42703: { status: 400, msg: "column not found" },
+    23502: { status: 400, msg: "missing required columns" },
+    23503: { status: 422, msg: "unprocessable entity" },
   };
   if (err.code in codes) {
     const { msg, status } = codes[err.code];
@@ -25,13 +25,19 @@ exports.handle500 = (err, req, res, next) => {
   console.log(err, "unhnandled error");
   res
     .status(500)
-    .send({ msg: "We apologise for the delay, this will be fixed shortly" });
+    .send({ msg: "we apologise for the delay, this will be fixed shortly" });
 };
 
 exports.handle404 = (req, res, next) => {
-  res.status(404).send({ msg: "Route not found" });
+  res.status(404).send({ msg: "route not found" });
 };
 
 exports.handle405 = (req, res, next) => {
   res.status(405).send({ msg: "405 method not allowed" });
+};
+
+exports.handleTeapot = (req, res, next) => {
+  res
+    .status(418)
+    .send({ msg: "I dont know how you got here, but you are a teapot" });
 };

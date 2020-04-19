@@ -6,6 +6,7 @@ const {
   handle500,
   handleCustomErrors,
   handle404,
+  handleTeapot,
 } = require("./errors/index.errors");
 
 app.use(express.json());
@@ -15,5 +16,6 @@ app.all("/*", handle404);
 app.use(handlePSQLErrors);
 app.use(handleCustomErrors);
 app.use(handle500);
+app.use(handleTeapot);
 
 module.exports = app;
