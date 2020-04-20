@@ -23,6 +23,28 @@ describe("INVALID METHODS", () => {
   });
 });
 describe("/api", () => {
+  it.only("GET: Status 200 - responds with JSON object outlining all possible endpoints", () => {
+    return request(app)
+      .get("/api/")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).to.be.an("object");
+        expect(body).to.contain.keys(
+          "GET /api",
+          "GET /api/topics",
+          "GET /api/users",
+          "GET /api/users:username",
+          "GET /api/articles",
+          "GET /api/articles/:article_id",
+          "PATCH /api/articles/:article_id",
+          "POST /api/articles/:article_id/comments",
+          "GET /api/articles/:article_id/comments",
+          "PATCH /api/comments/:comment_id",
+          "DELETE /api/comments/:comment_id"
+        );
+      });
+  });
+
   describe("ROUTE NOT FOUND", () => {
     it("Status 404 - responds with route not found", () => {
       return request(app)
