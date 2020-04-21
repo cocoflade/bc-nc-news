@@ -23,7 +23,7 @@ describe("INVALID METHODS", () => {
   });
 });
 describe("/api", () => {
-  it.only("GET: Status 200 - responds with JSON object outlining all possible endpoints", () => {
+  it("GET: Status 200 - responds with JSON object outlining all possible endpoints", () => {
     return request(app)
       .get("/api/")
       .expect(200)
@@ -66,7 +66,14 @@ describe("/api", () => {
         });
     });
   });
-
+  it("Status 404: responds with route not found", () => {
+    return request(app)
+      .get("/api/not-topic")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).to.equal("route not found");
+      });
+  });
   describe("/users", () => {
     it("GET: Status 200 - responds with an array of user objects", () => {
       return request(app)
