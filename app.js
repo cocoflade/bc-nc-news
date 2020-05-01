@@ -10,8 +10,8 @@ const {
 } = require("./errors/index.errors");
 const cors = require("cors");
 
-app.use(cors());
 app.use(express.json());
+app.use(cors());
 
 app.use("/api", apiRouter);
 app.all("/*", handle404);
