@@ -86,7 +86,7 @@ To test the provided utility functions:
 
 Luke Flannery
 
-## Acknowledgments
+## Acknowledegments
 
 I'd like to give a special thank you to the wonderful team at Northcoders, Manchester, for giving me the tools and knowledge necessary to create such a project. Visit them at https://northcoders.com/
 
